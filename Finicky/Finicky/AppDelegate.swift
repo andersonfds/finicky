@@ -41,8 +41,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         func configureAppOptions(
             hideIcon: Bool,
             shortUrlProviders: [String]?,
-            checkForUpdate: Bool
+            checkForUpdate: Bool,
+            appLogo: String?
         ) {
+            
+            if appLogo != nil {
+                if FileManager.default.fileExists(atPath: appLogo!) {
+                    // let img = NSImage(byReferencingFile: appLogo!)
+                    //UIApp.shared.supportsAlternateIcons
+
+                    //UIApplication.shared.setAlternateIconName("AppIcon-2")
+                    //img?.size = NSSize(width: 24.0, height: 24.0)
+                    //statusItem.button?.image = img
+                }
+            }
             shortUrlResolver = FNShortUrlResolver(shortUrlProviders: shortUrlProviders ?? defaultUrlShorteners)
 
             if statusItem != nil {

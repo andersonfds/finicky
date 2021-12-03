@@ -66,6 +66,7 @@ export const finickyConfigSchema = {
     ]),
     checkForUpdate: validate.boolean,
     logRequests: validate.boolean,
+    appLogo: validate.string,
   }),
   rewrite: validate.arrayOf(
     validate.shape({

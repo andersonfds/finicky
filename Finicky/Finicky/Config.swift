@@ -6,7 +6,8 @@ public typealias Callback<T> = (T) -> Void
 public typealias Callback2<T, U> = (T, U) -> Void
 public typealias OptionsCb = (_ hideIcon: Bool,
                               _ shortUrlProviders: [String]?,
-                              _ checkForUpdate: Bool) -> Void
+                              _ checkForUpdate: Bool,
+                              _ appLogo: String?) -> Void
 public typealias ConfigPathProvider = () -> String?
 
 /*
@@ -238,9 +239,10 @@ open class FinickyConfig {
             let success = parseConfig(configObject!)
             if success {
                 configureAppOptions(
-                    getSimpleOption(name: "hideIcon", defaultValue: false),
+                    getSimpleOption(castTo: Bool.self, name: "hideIcon", defaultValue: false)!,
                     getShortUrlProviders(),
-                    getSimpleOption(name: "checkForUpdate", defaultValue: true)
+                    getSimpleOption(castTo: Bool.self, name: "checkForUpdate", defaultValue: true)!,
+                    getSimpleOption(castTo: String.self, name: "appLogo")
                 )
 
                 if showSuccess {
@@ -250,15 +252,15 @@ open class FinickyConfig {
             }
         }
     }
-
-    func getSimpleOption<T>(name: String, defaultValue: T) -> T {
+    
+    func getSimpleOption<T>(castTo: T.Type, name: String, defaultValue: T? = nil) -> T? {
         if name.count == 0 {
             print("Tried to get an option with no name")
             return defaultValue
         }
-
+        
         let path = "module.exports.options && module.exports.options." + name
-
+        
         if let result = ctx.evaluateScript(path) {
             if JSValueIsUndefined(ctx.jsGlobalContextRef, result.jsValueRef) {
                 return defaultValue
@@ -267,11 +269,16 @@ open class FinickyConfig {
             if T.self == Bool.self {
                 let bool = (result.toBool() as? T)
                 return bool ?? defaultValue
-            } else {
-                print("This type is not yet supported")
             }
+            
+            if T.self == String.self {
+                let val = (result.toString() as? T)
+                return val ?? defaultValue
+            }
+            
+            // TODO: Implement the other members
         }
-
+        
         return defaultValue
     }
 
